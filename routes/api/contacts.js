@@ -10,9 +10,7 @@ router.get("/:contactId", contactsController.getById);
 
 router.post("/", isEmptyBody, contactsController.add);
 
-router.delete("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
-});
+router.delete("/:contactId", isEmptyBody, contactsController.deleteContactId);
 
 router.put("/:contactId", isEmptyBody, contactsController.updateContacts);
 

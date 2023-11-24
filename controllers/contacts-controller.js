@@ -48,7 +48,7 @@ const add = async (req, res, next) => {
     //   return;
     // }
     if (error) {
-        console.log('error', error)
+      console.log("error", error);
       throw HttpError(400, error.message);
     }
     const result = await contactsService.addContact(req.body);
@@ -61,25 +61,40 @@ const add = async (req, res, next) => {
 const updateContacts = async (req, res, next) => {
   try {
     const { error } = contactUpdateShema.validate(req.body);
-
     if (error) {
-        console.log('error', error)
       throw HttpError(400, error.message);
     }
-    const {id} = req.params;
-    const result = await contactsService.updateContact(id, req.body)
+    const { contactId } = req.params;
+    const result = await contactsService.updateContact(contactId, req.body);
     if (!result) {
-        throw HttpError(404, `Not found`);
-      }
-      res.json(result)
+      throw HttpError(404, `Not found`);
+    }
+    res.json(result);
   } catch (error) {
     next(error);
   }
 };
+
+const deleteContactId = async (req,res, next)=>{
+    try{
+const {contactId} = req.params;
+const result = await contactsService.removeContact(contactId);
+if (!result) {
+    throw HttpError(404, `Not found`);
+  }
+res.json({
+    message: "contact deleted"
+})
+    }
+    catch(error){
+        next(error)
+    }
+}
 
 export default {
   getAllContacts,
   getById,
   add,
   updateContacts,
+  deleteContactId
 };
