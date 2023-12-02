@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import Joi from "joi";
-
 import { handeleSaveError, preUpdate } from "./hooks.js";
+
 const contactSchema = new Schema(
   {
     name: {
@@ -19,6 +19,11 @@ const contactSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+    }
   },
   { versionKey: false, timestamps: true }
 );
