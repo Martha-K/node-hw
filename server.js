@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
 import app from "./app.js";
-// import {DB_HOST} from 'process.env'
-
 const{ DB_HOST} = process.env
 
 mongoose
