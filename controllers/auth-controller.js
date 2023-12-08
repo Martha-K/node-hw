@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import gravatar from 'gravatar';
 import User from "../models/User.js";
 import { HttpError } from "../helpers/index.js";
+
 
 const signup = async (req, res, next) => {
   try {
@@ -11,9 +12,12 @@ const signup = async (req, res, next) => {
     if (user) {
       throw HttpError(409, "Email in use");
     }
+
+    const avatarURL = gravatar.url(email, { s: '200', r: 'pg', d: 'identicon' });
+
     const hashPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL });
     res.status(201).json({
       email: newUser.email,
     });
@@ -21,6 +25,23 @@ const signup = async (req, res, next) => {
     next(error);
   }
 };
+// const signup = async (req, res, next) => {
+//   try {
+//     const { email, password } = req.body;
+//     const user = await User.findOne({ email });
+//     if (user) {
+//       throw HttpError(409, "Email in use");
+//     }
+//     const hashPassword = await bcrypt.hash(password, 10);
+
+//     const newUser = await User.create({ ...req.body, password: hashPassword });
+//     res.status(201).json({
+//       email: newUser.email,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 const signin = async (req, res, next) => {
   try {

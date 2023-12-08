@@ -10,6 +10,7 @@ const contactSchema = new Schema(
     },
     email: {
       type: String,
+      required: true,
     },
     phone: {
       type: String,
@@ -19,11 +20,14 @@ const contactSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    avatarUrl: {
+      type: String,
+    },
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'user',
+      ref: "user",
       required: true,
-    }
+    },
   },
   { versionKey: false, timestamps: true }
 );
