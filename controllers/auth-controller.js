@@ -1,8 +1,14 @@
 import bcrypt from "bcryptjs";
+import path from 'path'; 
+import fs from 'fs/promises'; 
+import Jimp from "jimp";
 import jwt from "jsonwebtoken";
-
+import gravatar from 'gravatar';
 import User from "../models/User.js";
 import { HttpError } from "../helpers/index.js";
+
+const avatarsPath = path.resolve("public", "avatars");
+
 
 const signup = async (req, res, next) => {
   try {
@@ -11,9 +17,12 @@ const signup = async (req, res, next) => {
     if (user) {
       throw HttpError(409, "Email in use");
     }
+
+    const avatarURL = gravatar.url(email, { s: '200', r: 'pg', d: 'identicon' });
+
     const hashPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL });
     res.status(201).json({
       email: newUser.email,
     });
@@ -74,9 +83,35 @@ const logout = async (req, res, next) => {
   }
 };
 
+const updateAvatar = async (req, res, next) => {
+  try{
+  const { _id } = req.user;
+
+	const { path: oldPath, filename } = req.file;
+
+	const newPath = path.join(avatarsPath, filename);
+
+	(await Jimp.read(oldPath)).resize(250, 250).write(oldPath);
+
+	await fs.rename(oldPath, newPath);
+	const avatarUrl = path.join('avatars', filename);
+
+	await User.findByIdAndUpdate(_id, { avatarUrl }, { new: true });
+	if (error) {
+		throw new HttpError(401, `Not authorized`);
+	}
+	res.status(200).json({ avatarUrl });
+  }
+  catch(error){
+    next();
+
+  }
+};
+
 export default {
   signup,
   signin,
   getCurrent,
   logout,
+  updateAvatar
 };

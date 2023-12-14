@@ -10,6 +10,7 @@ const contactSchema = new Schema(
     },
     email: {
       type: String,
+      required: true,
     },
     phone: {
       type: String,
@@ -21,9 +22,9 @@ const contactSchema = new Schema(
     },
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'user',
+      ref: "user",
       required: true,
-    }
+    },
   },
   { versionKey: false, timestamps: true }
 );

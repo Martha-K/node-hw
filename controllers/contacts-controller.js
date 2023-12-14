@@ -1,9 +1,13 @@
+// import fs from "fs/promises";
+// import gravatar from 'gravatar';
+
+// import path from "path";
 import Contact from "../models/Contact.js";
 import { HttpError } from "../helpers/index.js";
 
 const getAllContacts = async (req, res, next) => {
   try {
-    const {_id: owner} = req.user;
+    const { _id: owner } = req.user;
     const result = await Contact.find(owner);
     res.json(result);
   } catch (error) {
@@ -14,9 +18,9 @@ const getAllContacts = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { contactId } = req.params;
-    const {_id: owner} = req.user;
+    const { _id: owner } = req.user;
 
-    const result = await Contact.findOne({_id: contactId, owner});
+    const result = await Contact.findOne({ _id: contactId, owner });
 
     if (!result) {
       throw HttpError(404, `Not found`);
@@ -33,7 +37,8 @@ const add = async (req, res, next) => {
     if (error) {
       throw HttpError(400, error.message);
     }
-    const {_id: owner} = req.user;
+    const { _id: owner } = req.user;
+  
     const result = await Contact.create({...req.body, owner});
     res.status(201).json(result);
   } catch (error) {
@@ -48,8 +53,11 @@ const updateContacts = async (req, res, next) => {
       throw HttpError(400, error.message);
     }
     const { contactId } = req.params;
-    const {_id: owner} = req.user;
-    const result = await Contact.findOneAndUpdate({_id: contactId, owner}, req.body);
+    const { _id: owner } = req.user;
+    const result = await Contact.findOneAndUpdate(
+      { _id: contactId, owner },
+      req.body
+    );
     if (!result) {
       throw HttpError(404, `Not found`);
     }
@@ -62,9 +70,9 @@ const updateContacts = async (req, res, next) => {
 const deleteContactId = async (req, res, next) => {
   try {
     const { contactId } = req.params;
-    const {_id: owner} = req.user;
+    const { _id: owner } = req.user;
 
-    const result = await Contact.findOneAndDelete({_id: contactId, owner});
+    const result = await Contact.findOneAndDelete({ _id: contactId, owner });
     if (!result) {
       throw HttpError(404, `Not found`);
     }
@@ -81,5 +89,5 @@ export default {
   getById,
   add,
   updateContacts,
-  deleteContactId
+  deleteContactId,
 };
