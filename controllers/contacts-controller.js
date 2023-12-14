@@ -1,11 +1,9 @@
-import fs from "fs/promises";
-import gravatar from 'gravatar';
+// import fs from "fs/promises";
+// import gravatar from 'gravatar';
 
-import path from "path";
+// import path from "path";
 import Contact from "../models/Contact.js";
 import { HttpError } from "../helpers/index.js";
-
-const avatarsPath = path.resolve("public", "avatars");
 
 const getAllContacts = async (req, res, next) => {
   try {
@@ -32,42 +30,21 @@ const getById = async (req, res, next) => {
     next();
   }
 };
+
 const add = async (req, res, next) => {
   try {
     const { error } = req.body;
     if (error) {
       throw HttpError(400, error.message);
     }
-
-    const { email, ...otherContactData } = req.body;
-
-    const avatarUrl = gravatar.url(email, { s: '200', r: 'pg', d: 'identicon' });
-
-    const result = await Contact.create({ ...otherContactData, avatar: avatarUrl, owner: req.user._id });
+    const { _id: owner } = req.user;
+  
+    const result = await Contact.create({...req.body, owner});
     res.status(201).json(result);
   } catch (error) {
     next(error);
   }
 };
-
-// const add = async (req, res, next) => {
-//   try {
-//     const { error } = req.body;
-//     if (error) {
-//       throw HttpError(400, error.message);
-//     }
-//     const { _id: owner } = req.user;
-//     // const { path: oldPath, filename } = req.file;
-//     // const newPath = path.join(avatarsPath, filename);
-
-//   //   await fs.rename(oldPath, newPath);
-//   // const avatar = path.join("avatars", filename)
-//     const result = await Contact.create({...req.body, avatar, owner});
-//     res.status(201).json(result);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 
 const updateContacts = async (req, res, next) => {
   try {
